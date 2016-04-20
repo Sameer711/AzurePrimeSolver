@@ -1,0 +1,25 @@
+﻿@using PrimeSolverCommon;
+
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>Prime Solver</h1>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <p>
+            Prime Solver is a sample application that demonstrates how to create a
+            multi-tier ASP.NET application that runs in an Azure Cloud Service
+            or Web Site.
+        </p>
+        <p>The application uses SQL Database and Azure storage queues and blobs.</p>
+        <ul>
+            <li>@Html.ActionLink("All", "Index", "PrimeNumberCandidate", null, null)</li>
+        </ul>
+        <h2>Or test a new prime number</h2>
+        <p><a class="btn btn-default" href="@Url.Action("Create","PrimeNumberCandidate")">Test a prime</a></p>
+        <p><a class="btn btn-default" href="@Url.Action("CreateMany","PrimeNumberCandidate")">Test many primes</a></p>
+    </div>
+</div>

@@ -1,0 +1,36 @@
+﻿@model IEnumerable<PrimeSolverCommon.PrimeNumberCandidate>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+   
+</p>
+    @*<tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Number)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IsPrime)
+        </th>
+      
+        <th></th>
+    </tr>*@
+
+  <ul>
+
+    @foreach (var item in Model.OrderByDescending(item => item.Number))
+    {
+        var @isPrimeClass = item.IsPrime.HasValue && item.IsPrime.Value ? "isPrime numberCell" : "numberCell";
+        <li class="@isPrimeClass">
+            @Html.DisplayFor(modelItem => item.Number)
+        </li>
+
+
+    }
+</ul>
+
