@@ -10,15 +10,17 @@ namespace PrimeSolverWorker
 {
     public class WorkerRole : RoleEntryPoint
     {
-        private CloudQueue primesQueue;
+        private CloudQueue _primesQueue;
         //private CloudBlobContainer primesBlobContainer;
-        private PrimeNumberCandidatesContext db;
+        private PrimeNumberCandidatesContext _db;
         //private CloudTable _tableContainer;
 
         public override void Run()
         {
             Trace.TraceInformation("PrimeSolverWorker entry point called");
             CloudQueueMessage msg = null;
+
+            //todo - try http://stackoverflow.com/a/16739691/2343
 
             // To make the worker role more scalable, implement multi-threaded and 
             // asynchronous code. See:
@@ -33,7 +35,7 @@ namespace PrimeSolverWorker
                     // on transaction costs by using the GetMessages method to get
                     // multiple queue messages at a time. See:
                     // http://azure.microsoft.com/en-us/documentation/articles/cloud-services-dotnet-multi-tier-app-storage-5-worker-role-b/#addcode
-                    msg = this.primesQueue.GetMessage();
+                    msg = this._primesQueue.GetMessage();
                     if (msg != null)
                     {
                         ProcessQueueMessage(msg);
@@ -47,7 +49,7 @@ namespace PrimeSolverWorker
                 {
                     if (msg != null && msg.DequeueCount > 5)
                     {
-                        this.primesQueue.DeleteMessage(msg);
+                        this._primesQueue.DeleteMessage(msg);
                         Trace.TraceError("Deleting poison queue item: '{0}'", msg.AsString);
                     }
                     Trace.TraceError("Exception in PrimeSolverWorker: '{0}'", e.Message);
@@ -74,9 +76,9 @@ namespace PrimeSolverWorker
             // ... This version was changed to test the square.
             // ... Original version tested against the square root.
             // ... Also we exclude 1 at the end.
-            for (int i = 3; (i * i) <= candidate; i += 2)
+            for (int i = 3; i * i <= candidate; i += 2)
             {
-                if ((candidate % i) == 0)
+                if (candidate % i == 0)
                 {
                     return false;
                 }
@@ -91,78 +93,20 @@ namespace PrimeSolverWorker
             // Queue message contains AdId.
             var numberToTest = int.Parse(msg.AsString);
 
-            var PrimeNumberCandidate = db.PrimeNumberCandidates.Find(numberToTest);
-            if (PrimeNumberCandidate == null)
+            var primeNumberCandidate = _db.PrimeNumberCandidates.Find(numberToTest);
+            if (primeNumberCandidate == null)
             {
-                PrimeNumberCandidate = new PrimeNumberCandidate(numberToTest)
+                primeNumberCandidate = new PrimeNumberCandidate(numberToTest)
                 /*throw new Exception($"numberToTest {numberToTest} not found, cannot check if prime")*/;
-                db.PrimeNumberCandidates.Add(PrimeNumberCandidate);
+                _db.PrimeNumberCandidates.Add(primeNumberCandidate);
             }
 
-            //Uri blobUri = new Uri(ad.ImageURL);
-            //string blobName = blobUri.Segments[blobUri.Segments.Length - 1];
-
-            //CloudBlockBlob inputBlob = this.primesBlobContainer.GetBlockBlobReference(blobName);
-            //string thumbnailName = Path.GetFileNameWithoutExtension(inputBlob.Name) + "thumb.jpg";
-            //CloudBlockBlob outputBlob = this.primesBlobContainer.GetBlockBlobReference(thumbnailName);
-
-            //using (Stream input = inputBlob.OpenRead())
-            //using (Stream output = outputBlob.OpenWrite())
-            //{
-            //    ConvertImageToThumbnailJPG(input, output);
-            //    outputBlob.Properties.ContentType = "image/jpeg";
-            //}
-            //Trace.TraceInformation("Generated thumbnail in blob {0}", thumbnailName);
-            PrimeNumberCandidate.IsPrime = IsPrime(numberToTest);
-            //ad.ThumbnailURL = outputBlob.Uri.ToString();
-            db.SaveChanges();
-            //Trace.TraceInformation("Updated thumbnail URL in database: {0}", ad.ThumbnailURL);
+            primeNumberCandidate.IsPrime = IsPrime(numberToTest);
+            _db.SaveChanges();
 
             // Remove message from queue.
-            this.primesQueue.DeleteMessage(msg);
+            this._primesQueue.DeleteMessage(msg);
         }
-
-        //public void ConvertImageToThumbnailJPG(Stream input, Stream output)
-        //{
-        //    int thumbnailsize = 80;
-        //    int width;
-        //    int height;
-        //    var originalImage = new Bitmap(input);
-
-        //    if (originalImage.Width > originalImage.Height)
-        //    {
-        //        width = thumbnailsize;
-        //        height = thumbnailsize * originalImage.Height / originalImage.Width;
-        //    }
-        //    else
-        //    {
-        //        height = thumbnailsize;
-        //        width = thumbnailsize * originalImage.Width / originalImage.Height;
-        //    }
-
-        //    Bitmap thumbnailImage = null;
-        //    try
-        //    {
-        //        thumbnailImage = new Bitmap(width, height);
-
-        //        using (Graphics graphics = Graphics.FromImage(thumbnailImage))
-        //        {
-        //            graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-        //            graphics.SmoothingMode = SmoothingMode.AntiAlias;
-        //            graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-        //            graphics.DrawImage(originalImage, 0, 0, width, height);
-        //        }
-
-        //        thumbnailImage.Save(output, ImageFormat.Jpeg);
-        //    } 
-        //    finally
-        //    {
-        //        if (thumbnailImage != null)
-        //        {
-        //            thumbnailImage.Dispose();
-        //        }
-        //    }
-        //}
 
         // A production app would also include an OnStop override to provide for
         // graceful shut-downs of worker-role VMs.  See
@@ -174,7 +118,7 @@ namespace PrimeSolverWorker
 
             // Read database connection string and open database.
             var dbConnString = CloudConfigurationManager.GetSetting("ContosoAdsDbConnectionString");
-            db = new PrimeNumberCandidatesContext(dbConnString);
+            _db = new PrimeNumberCandidatesContext(dbConnString);
 
             // Open storage account using credentials from .cscfg file.
             var storageAccount = CloudStorageAccount.Parse
@@ -194,8 +138,8 @@ namespace PrimeSolverWorker
 
             Trace.TraceInformation("Creating primes queue");
             CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
-            primesQueue = queueClient.GetQueueReference("primes");
-            primesQueue.CreateIfNotExists();
+            _primesQueue = queueClient.GetQueueReference("primes");
+            _primesQueue.CreateIfNotExists();
 
             //Trace.TraceInformation("Storage initialized");
             return base.OnStart();

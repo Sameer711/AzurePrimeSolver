@@ -7,8 +7,8 @@
 <h2>Index</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
-   
+    @Html.ActionLink("Solve for more primes!", "CreateMany", null, new { @class = "btn btn-primary" })
+    <button type="button" class="btn btn-default" id="filterDisplay">Show Only Primes</button>
 </p>
     @*<tr>
         <th>
@@ -21,11 +21,11 @@
         <th></th>
     </tr>*@
 
-  <ul>
+<ul>
 
     @foreach (var item in Model.OrderByDescending(item => item.Number))
     {
-        var @isPrimeClass = item.IsPrime.HasValue && item.IsPrime.Value ? "isPrime numberCell" : "numberCell";
+        var @isPrimeClass = item.IsPrime.HasValue && item.IsPrime.Value ? "isPrime numberCell" : "notPrime numberCell";
         <li class="@isPrimeClass">
             @Html.DisplayFor(modelItem => item.Number)
         </li>
@@ -33,4 +33,16 @@
 
     }
 </ul>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#filterDisplay').click(function() {
+            $(".notPrime").toggle();
+            $(this).text(function(i, text) {
+                return text === "Show All" ? "Show only Primes" : "Show All";
+            });
+        });
+    });
+</script>
+
+
 

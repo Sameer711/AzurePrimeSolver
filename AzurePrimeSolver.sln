@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimeSolverWorker", "Contos
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimeSolverCommon", "ContosoAdsCommon\PrimeSolverCommon.csproj", "{4362FC53-98E5-4E46-98A1-1F99AD74C13B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{DA3C4489-D72B-41BE-9140-2225E1AAC20A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0F8966AF-0D48-4840-90EF-0C8CD052FC02} = {DA3C4489-D72B-41BE-9140-2225E1AAC20A}
+		{9C837457-68C0-4B86-8CAC-69F9B560D0D8} = {DA3C4489-D72B-41BE-9140-2225E1AAC20A}
+		{4362FC53-98E5-4E46-98A1-1F99AD74C13B} = {DA3C4489-D72B-41BE-9140-2225E1AAC20A}
 	EndGlobalSection
 EndGlobal

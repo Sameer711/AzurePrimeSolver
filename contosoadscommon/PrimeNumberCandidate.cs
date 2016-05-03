@@ -11,6 +11,12 @@ namespace PrimeSolverCommon
             Number = numberToTest;
         }
 
+        public PrimeNumberCandidate(int numberToTest, bool isPrime)
+        {
+            Number = numberToTest;
+            IsPrime = isPrime;
+        }
+
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Key]
         public int Number { get; set; }
