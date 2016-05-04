@@ -55,10 +55,14 @@
   <ItemGroup>
     <Folder Include="PrimeSolverWebContent" />
     <Folder Include="PrimeSolverWorkerContent" />
+    <Folder Include="Profiles" />
   </ItemGroup>
   <ItemGroup>
     <DiagnosticsConfiguration Include="PrimeSolverWebContent\diagnostics.wadcfgx" />
     <DiagnosticsConfiguration Include="PrimeSolverWorkerContent\diagnostics.wadcfgx" />
+  </ItemGroup>
+  <ItemGroup>
+    <PublishProfile Include="Profiles\primesolverProduction.azurePubxml" />
   </ItemGroup>
   <!-- Import the target files for this project template -->
   <PropertyGroup>

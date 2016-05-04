@@ -5,6 +5,7 @@ using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
 using PrimeSolverCommon;
+using PrimeSolverRepository;
 
 namespace PrimeSolverWorker
 {
@@ -12,7 +13,7 @@ namespace PrimeSolverWorker
     {
         private CloudQueue _primesQueue;
         //private CloudBlobContainer primesBlobContainer;
-        private PrimeNumberCandidatesContext _db;
+        private readonly PrimeNumbersRepository _repository = new PrimeNumbersRepository();
         //private CloudTable _tableContainer;
 
         public override void Run()
@@ -58,51 +59,16 @@ namespace PrimeSolverWorker
             }
         }
 
-        public static bool IsPrime(int candidate)
-        {
-            // Test whether the parameter is a prime number.
-            if ((candidate & 1) == 0)
-            {
-                if (candidate == 2)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            // Note:
-            // ... This version was changed to test the square.
-            // ... Original version tested against the square root.
-            // ... Also we exclude 1 at the end.
-            for (int i = 3; i * i <= candidate; i += 2)
-            {
-                if (candidate % i == 0)
-                {
-                    return false;
-                }
-            }
-            return candidate != 1;
-        }
-
         private void ProcessQueueMessage(CloudQueueMessage msg)
         {
             Trace.TraceInformation("Processing queue message {0}", msg);
 
-            // Queue message contains AdId.
             var numberToTest = int.Parse(msg.AsString);
-
-            var primeNumberCandidate = _db.PrimeNumberCandidates.Find(numberToTest);
-            if (primeNumberCandidate == null)
+            var primeNumberCandidate = new PrimeNumberCandidate(numberToTest)
             {
-                primeNumberCandidate = new PrimeNumberCandidate(numberToTest)
-                /*throw new Exception($"numberToTest {numberToTest} not found, cannot check if prime")*/;
-                _db.PrimeNumberCandidates.Add(primeNumberCandidate);
-            }
-
-            primeNumberCandidate.IsPrime = IsPrime(numberToTest);
-            _db.SaveChanges();
+                IsPrime = PrimeSolver.IsPrime(numberToTest)
+            };
+            _repository.Add(primeNumberCandidate);
 
             // Remove message from queue.
             this._primesQueue.DeleteMessage(msg);
@@ -115,10 +81,6 @@ namespace PrimeSolverWorker
         {
             // Set the maximum number of concurrent connections.
             ServicePointManager.DefaultConnectionLimit = 12;
-
-            // Read database connection string and open database.
-            var dbConnString = CloudConfigurationManager.GetSetting("ContosoAdsDbConnectionString");
-            _db = new PrimeNumberCandidatesContext(dbConnString);
 
             // Open storage account using credentials from .cscfg file.
             var storageAccount = CloudStorageAccount.Parse

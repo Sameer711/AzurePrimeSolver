@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data.Entity;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -64,20 +63,20 @@ namespace PrimeSolverWeb.Controllers
             return View();
         }
 
-        // POST: PrimeNumberCandidate/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(
-            [Bind(Include = "Number")] PrimeNumberCandidate primeNumber
-            //,
-            //HttpPostedFileBase imageFile
-            )
-        {
-            if (!ModelState.IsValid) return View();
-            //primeNumber.PostedDate = DateTime.Now;
-             _solver.SolveForPrime(primeNumber);
-            return RedirectToAction("Index");
-        }
+        //// POST: PrimeNumberCandidate/Create
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Create(
+        //    [Bind(Include = "Number")] PrimeCandidateViewModel primeNumber
+        //    //,
+        //    //HttpPostedFileBase imageFile
+        //    )
+        //{
+        //    if (!ModelState.IsValid) return View();
+        //    //primeNumber.PostedDate = DateTime.Now;
+        //     _solver.SolveForPrime(primeNumber);
+        //    return RedirectToAction("Index");
+        //}
 
         //protected override void Dispose(bool disposing)
         //{

@@ -1,6 +1,6 @@
 ﻿using System.Data.Entity;
 
-namespace PrimeSolverCommon
+namespace PrimeSolverRepository
 {
     public class PrimeNumberCandidatesContext : DbContext
     {

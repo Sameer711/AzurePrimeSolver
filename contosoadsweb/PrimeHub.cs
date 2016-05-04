@@ -22,7 +22,7 @@ namespace PrimeSolverWeb
             
         }
 
-        public IEnumerable<PrimeNumberCandidate> GetAll()
+        public IEnumerable<PrimeCandidateViewModel> GetAll()
         {
             return _solver.Get();
         }

@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PrimeSolverCommon
+namespace PrimeSolverRepository
 {
     public class PrimeNumberCandidate 
     {

@@ -8,6 +8,7 @@ using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Microsoft.WindowsAzure.Storage.RetryPolicies;
+using PrimeSolverRepository;
 
 namespace PrimeSolverCommon
 {
@@ -16,7 +17,7 @@ namespace PrimeSolverCommon
     /// </summary>
     public class PrimeSolver
     {
-        private readonly PrimeNumberCandidatesContext _db = new PrimeNumberCandidatesContext();
+        private readonly PrimeNumbersRepository _repository = new PrimeNumbersRepository();
         private CloudQueue _primesQueue;
 
         private static PrimeSolver Instance { get; set; }
@@ -30,10 +31,10 @@ namespace PrimeSolverCommon
             return Instance ?? (Instance = new PrimeSolver());
         }
 
-        public IEnumerable<PrimeNumberCandidate> Get()
+        public IEnumerable<PrimeCandidateViewModel> Get()
         {
-            var list = _db.PrimeNumberCandidates;
-            return list;
+            var list = _repository.Get();
+            return list.Select(PrimeCandidateViewModel.FromEntity);
         }
 
         //protected override void Dispose(bool disposing)
@@ -47,33 +48,28 @@ namespace PrimeSolverCommon
 
         public int GetMaxSolved()
         {
-            var max = _db.PrimeNumberCandidates.Any() ? _db.PrimeNumberCandidates.Max(p => p.Number) : 0;
+            var max = _repository.Get().Any() ? _repository.Get().Max(p => p.Number) :1;
             return max;
         }
 
-        public PrimeNumberCandidate Get(int number)
+        public PrimeCandidateViewModel Get(int number)
         {
-            var numberCandidate = _db.PrimeNumberCandidates.FirstOrDefault(p=>p.Number == number);
-            return numberCandidate;
+            var numberCandidate = _repository.Get().FirstOrDefault(p=>p.Number == number);
+            return PrimeCandidateViewModel.FromEntity(numberCandidate);
         }
 
-        public void SolveForPrime(PrimeNumberCandidate primeNumber)
+        public void SolveForPrime(int number)
         {
-            //_db.PrimeNumberCandidates.Add(primeNumber);
+            //_repository.Get().Add(primeNumber);
             //await _db.SaveChangesAsync();
             //Trace.TraceInformation("Created Prime {0} in database", primeNumber.Number);
 
-            var primeToTest = primeNumber.Number.ToString();
+            var primeToTest = number.ToString();
             var queueMessage = new CloudQueueMessage(primeToTest);
              _primesQueue.AddMessageAsync(queueMessage);
             Trace.TraceInformation("Created queue message for number {0}", primeToTest);
         }
 
-        public void SolveForPrime(int number)
-        {
-            var primeNumber = new PrimeNumberCandidate(number);
-            SolveForPrime(primeNumber);
-        }
 
         private void InitializeStorage()
         {
@@ -89,5 +85,32 @@ namespace PrimeSolverCommon
             _primesQueue = queueClient.GetQueueReference("primes");
         }
 
+        public static bool IsPrime(int candidate)
+        {
+            // Test whether the parameter is a prime number.
+            if ((candidate & 1) == 0)
+            {
+                if (candidate == 2)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            // Note:
+            // ... This version was changed to test the square.
+            // ... Original version tested against the square root.
+            // ... Also we exclude 1 at the end.
+            for (int i = 3; i * i <= candidate; i += 2)
+            {
+                if (candidate % i == 0)
+                {
+                    return false;
+                }
+            }
+            return candidate != 1;
+        }
     }
 }
