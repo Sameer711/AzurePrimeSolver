@@ -15,6 +15,9 @@
     <Endpoints>
       <InputEndpoint name="Endpoint1" protocol="http" port="80" />
     </Endpoints>
+    <Imports>
+      <Import moduleName="RemoteAccess" />
+    </Imports>
   </WebRole>
   <WorkerRole name="PrimeSolverWorker" vmsize="Small">
     <ConfigurationSettings>
@@ -22,5 +25,9 @@
       <Setting name="StorageConnectionString" />
       <Setting name="PrimeSolverDbConnectionString" />
     </ConfigurationSettings>
+    <Imports>
+      <Import moduleName="RemoteAccess" />
+      <Import moduleName="RemoteForwarder" />
+    </Imports>
   </WorkerRole>
 </ServiceDefinition>

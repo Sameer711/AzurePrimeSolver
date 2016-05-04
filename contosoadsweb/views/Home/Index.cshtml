@@ -12,12 +12,11 @@
         <p>
             Prime Solver solves primes using Azure.
         </p>
-        <p>The application uses SQL Database and Azure storage queues</p>
+        <p>The application uses ASP.NET MVC, SQL Database, Azure storage queues, Entity Framework, jQuery, Bootstrap</p>
         <ul>
             <li>@Html.ActionLink("All", "Index", "PrimeNumberCandidate", null, null)</li>
         </ul>
         <h2>Or test a new prime number</h2>
-        <p><a class="btn btn-default" href="@Url.Action("Create","PrimeNumberCandidate")">Test a prime</a></p>
-        <p><a class="btn btn-default" href="@Url.Action("CreateMany","PrimeNumberCandidate")">Test many primes</a></p>
+        <p><a class="btn btn-default" href="@Url.Action("CreateMany","PrimeNumberCandidate")">Solve many primes</a></p>
     </div>
 </div>

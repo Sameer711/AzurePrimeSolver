@@ -9,7 +9,7 @@ namespace PrimeSolverRepository.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
         }
 
         protected override void Seed(PrimeSolverRepository.PrimeNumberCandidatesContext context)

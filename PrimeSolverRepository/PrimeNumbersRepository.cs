@@ -12,14 +12,12 @@ namespace PrimeSolverRepository
     public class PrimeNumbersRepository
     {
         private readonly PrimeNumberCandidatesContext _db;
-        public PrimeNumbersRepository()
+        public PrimeNumbersRepository(string connectionString = null)
         {
-
             // Read database connection string and open database.
             //var dbConnString = ConfigurationManager.ConnectionStrings["PrimeSolverDbConnectionString"];
             //_db = new PrimeNumberCandidatesContext(dbConnString);
-            _db = new PrimeNumberCandidatesContext();
-
+            _db = connectionString == null ? new PrimeNumberCandidatesContext() : new PrimeNumberCandidatesContext(connectionString);
         }
 
         public IEnumerable<PrimeNumberCandidate> Get()

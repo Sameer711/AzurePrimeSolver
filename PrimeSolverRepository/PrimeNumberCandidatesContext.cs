@@ -4,7 +4,7 @@ namespace PrimeSolverRepository
 {
     public class PrimeNumberCandidatesContext : DbContext
     {
-        private DbSet<PrimeNumberCandidate> _primeNumberCandidates;
+        public DbSet<PrimeNumberCandidate> PrimeNumberCandidates { get; set; }
 
         public PrimeNumberCandidatesContext() : base("name=PrimeNumberCandidatesContext")
         {
@@ -14,10 +14,5 @@ namespace PrimeSolverRepository
         {
         }
 
-        public DbSet<PrimeNumberCandidate> PrimeNumberCandidates
-        {
-            get { return _primeNumberCandidates; }
-            set { _primeNumberCandidates = value; }
-        }
     }
 }

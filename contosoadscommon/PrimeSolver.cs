@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Azure;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
@@ -17,7 +18,7 @@ namespace PrimeSolverCommon
     /// </summary>
     public class PrimeSolver
     {
-        private readonly PrimeNumbersRepository _repository = new PrimeNumbersRepository();
+        private PrimeNumbersRepository _repository;
         private CloudQueue _primesQueue;
 
         private static PrimeSolver Instance { get; set; }
@@ -80,7 +81,9 @@ namespace PrimeSolverCommon
             // set a default retry policy appropriate for a web user interface.
             CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
             queueClient.DefaultRequestOptions.RetryPolicy = new LinearRetry(TimeSpan.FromSeconds(3), 3);
+            var dbConnString = CloudConfigurationManager.GetSetting("PrimeSolverDbConnectionString");
 
+            _repository = new PrimeNumbersRepository(dbConnString);
             // Get a reference to the queue.
             _primesQueue = queueClient.GetQueueReference("primes");
         }
