@@ -5,6 +5,7 @@ using Microsoft.WindowsAzure.Storage.Queue;
 using Microsoft.WindowsAzure.Storage.RetryPolicies;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Migrations;
 using System.Diagnostics;
 using System.Linq;
 using System.Web;

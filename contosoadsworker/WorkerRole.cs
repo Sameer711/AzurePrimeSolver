@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Azure;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.Storage;
@@ -13,7 +14,7 @@ namespace PrimeSolverWorker
     {
         private CloudQueue _primesQueue;
         //private CloudBlobContainer primesBlobContainer;
-        private readonly PrimeNumbersRepository _repository = new PrimeNumbersRepository();
+        private PrimeNumbersRepository _repository;
         //private CloudTable _tableContainer;
 
         public override void Run()
@@ -59,7 +60,7 @@ namespace PrimeSolverWorker
             }
         }
 
-        private void ProcessQueueMessage(CloudQueueMessage msg)
+        private async Task ProcessQueueMessage(CloudQueueMessage msg)
         {
             Trace.TraceInformation("Processing queue message {0}", msg);
 
@@ -68,7 +69,7 @@ namespace PrimeSolverWorker
             {
                 IsPrime = PrimeSolver.IsPrime(numberToTest)
             };
-            _repository.Add(primeNumberCandidate);
+            await _repository.Add(primeNumberCandidate);
 
             // Remove message from queue.
             this._primesQueue.DeleteMessage(msg);
@@ -94,9 +95,11 @@ namespace PrimeSolverWorker
             //primesBlobContainer = blobClient.GetContainerReference("primes");
             //if (_tableContainer.CreateIfNotExists())
             //{
-                // Enable public access on the newly created "primes" container.
-                //_tableContainer.SetPermissions(new TablePermissions(), new TableRequestOptions(new TableRequestOptions() {}));
+            // Enable public access on the newly created "primes" container.
+            //_tableContainer.SetPermissions(new TablePermissions(), new TableRequestOptions(new TableRequestOptions() {}));
             //}
+            var dbConnString = CloudConfigurationManager.GetSetting("PrimeSolverDbConnectionString");
+            _repository = new PrimeNumbersRepository(dbConnString);
 
             Trace.TraceInformation("Creating primes queue");
             CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
