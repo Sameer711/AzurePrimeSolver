@@ -40,6 +40,7 @@ namespace PrimeSolverRepository
         {
             return
                 _db.PrimeNumberCandidates.Where(p => onlyPrime && p.IsPrime.HasValue && p.IsPrime.Value)
+                    .OrderByDescending(p=>p.Number)
                     .Take(numResults);
         }
 

@@ -7,6 +7,7 @@ using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Microsoft.WindowsAzure.Storage.RetryPolicies;
+using Newtonsoft.Json;
 using PrimeSolverRepository;
 
 namespace PrimeSolverCommon
@@ -57,16 +58,16 @@ namespace PrimeSolverCommon
             return PrimeCandidateViewModel.FromEntity(numberCandidate);
         }
 
-        public void SolveForPrime(int number)
+        public void SolveForPrime(PrimeNumberWorkPackage workPackage)
         {
             //_repository.Get().Add(primeNumber);
             //await _db.SaveChangesAsync();
             //Trace.TraceInformation("Created Prime {0} in database", primeNumber.Number);
 
-            var primeToTest = number.ToString();
-            var queueMessage = new CloudQueueMessage(primeToTest);
-             _primesQueue.AddMessageAsync(queueMessage);
-            Trace.TraceInformation("Created queue message for number {0}", primeToTest);
+            var queueMessage = new CloudQueueMessage(JsonConvert.SerializeObject(workPackage));
+
+            _primesQueue.AddMessageAsync(queueMessage);
+            Trace.TraceInformation("Created queue message for number {0}", workPackage.Number);
         }
 
 

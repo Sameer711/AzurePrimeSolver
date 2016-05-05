@@ -5,7 +5,14 @@
 }
 
 <h2>Primes!</h2>
-Last 100 primes will be displayed.  Click the button to calculate more.
+Last 100 primes will be displayed. Click the button to calculate more.
+
+<div class="progress" style="">
+    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+        <span class="sr-only">0% Complete</span>
+    </div>
+</div>
+
 <p>
     <button type="button" class="btn btn-primary" id="btnSolve">Solve for more primes!</button>
 
@@ -61,11 +68,12 @@ Last 100 primes will be displayed.  Click the button to calculate more.
         var primeHub = $.connection.primeHub;
 
         // Create a function that the hub can call back to display progress
-        primeHub.client.updateProgress = function(number, isPrime) {
-            //$("#progress-span").text(progress);
+        primeHub.client.updateResult = function(number, isPrime) {
             var isPrimeText = isPrime ? "isPrime " : "notPrime ";
             $("#primeList").prepend("<li class='" + isPrimeText + "numberCell'>" + number + "</li>");
-            console.log("Appending <li class='" + isPrimeText + "numberCell'>" + number + "</li>");
+        };
+        primeHub.client.updateProgress = function (percent) {
+            $('.progress-bar').css('width', percent + '%').attr('aria-valuenow', percent);
         };
 
         //$.connection.hub.logging = true;

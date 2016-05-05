@@ -7,6 +7,7 @@ using Microsoft.Azure;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
+using Newtonsoft.Json;
 using PrimeSolverCommon;
 using PrimeSolverRepository;
 
@@ -20,6 +21,8 @@ namespace PrimeSolverWorker
         //private CloudTable _tableContainer;
         public string BaseUrl { get; set; }
         readonly HttpClient _httpClient = new HttpClient();
+        private int _numItems;
+        private int _numProcessed;
 
         public override void Run()
         {
@@ -68,14 +71,27 @@ namespace PrimeSolverWorker
         {
             Trace.TraceInformation("Processing queue message {0}", msg);
 
-            var numberToTest = int.Parse(msg.AsString);
+            var workPackage = JsonConvert.DeserializeObject<PrimeNumberWorkPackage>(msg.AsString);
+            if (workPackage.WorkType == WorkType.NewWork)
+            {
+                
+                _numItems = workPackage.NumEntries;
+                _numProcessed = 0;
+                this._primesQueue.DeleteMessage(msg);
+                return;
+            }
+
+            var numberToTest = workPackage.Number;
             var primeNumberCandidate = new PrimeNumberCandidate(numberToTest)
             {
                 IsPrime = PrimeSolver.IsPrime(numberToTest)
             };
             await _repository.Add(primeNumberCandidate);
 
-            CommunicateProgress(primeNumberCandidate);
+            _numProcessed++;
+            CommunicateResult(primeNumberCandidate);
+            var percent = (int)Math.Round((double)(100 * _numProcessed) / (_numItems-1));
+            CommunicateProgress(percent);
             // Remove message from queue.
             this._primesQueue.DeleteMessage(msg);
         }
@@ -86,12 +102,24 @@ namespace PrimeSolverWorker
         /// <param name="primeCandidate"></param>
         /// <remarks>Thanks to http://www.jerriepelser.com/blog/communicate-from-azure-webjob-with-signalr for the sample</remarks>
         /// <returns></returns>
-        private async Task CommunicateProgress(PrimeNumberCandidate primeCandidate)
+        private async Task CommunicateResult(PrimeNumberCandidate primeCandidate)
         {
             if (!primeCandidate.IsPrime.HasValue || !primeCandidate.IsPrime.Value)
                 return;
 
             var queryString = $"?number={primeCandidate.Number}&isPrime={primeCandidate.IsPrime}";
+            //var request = CloudConfigurationManager.GetSetting("ProgressNotificationEndpoint");
+            var request = BaseUrl + "/PrimeNumberCandidate/ResultNotification" + queryString;
+            await _httpClient.GetAsync(request);
+        }
+
+        /// <summary>
+        /// Send update to client endpoint
+        /// </summary>
+        /// <returns></returns>
+        private async Task CommunicateProgress(int percent)
+        {
+            var queryString = $"?percent={percent}";
             //var request = CloudConfigurationManager.GetSetting("ProgressNotificationEndpoint");
             var request = BaseUrl + "/PrimeNumberCandidate/ProgressNotification" + queryString;
             await _httpClient.GetAsync(request);

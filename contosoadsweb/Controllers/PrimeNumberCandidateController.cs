@@ -63,15 +63,24 @@ namespace PrimeSolverWeb.Controllers
             return View();
         }
 
-        public ActionResult ProgressNotification(int number, bool isPrime)
+        public ActionResult ResultNotification(int number, bool isPrime)
         {
             // Notify the client to refresh the list of connections
             var hubContext = GlobalHost.ConnectionManager.GetHubContext<PrimeHub>();
-            hubContext.Clients.All.updateProgress(number, isPrime);
+            hubContext.Clients.All.updateResult(number, isPrime);
 
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
+
+        public ActionResult ProgressNotification(int percent)
+        {
+            // Notify the client to refresh the list of connections
+            var hubContext = GlobalHost.ConnectionManager.GetHubContext<PrimeHub>();
+            hubContext.Clients.All.updateProgress(percent);
+
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+        }
         //// POST: PrimeNumberCandidate/Create
         //[HttpPost]
         //[ValidateAntiForgeryToken]
@@ -103,11 +112,23 @@ namespace PrimeSolverWeb.Controllers
         public ActionResult CreateMany()
         {
             var maxPrime = _solver.GetMaxSolved();
+            var startWork = new PrimeNumberWorkPackage
+            {
+                WorkType = WorkType.NewWork,
+                NumEntries = NUMPRIMES
+            };
+
+            _solver.SolveForPrime(startWork);
             for (int primeToTest = maxPrime + 1;primeToTest <= maxPrime + NUMPRIMES; primeToTest++)
             {
-                 _solver.SolveForPrime(primeToTest);
-                Trace.TraceInformation("Created queue message for number {0}", primeToTest);
+                var workPackage = new PrimeNumberWorkPackage
+                {
+                    WorkType = WorkType.ContinueWork,
+                    Number = primeToTest,
+                };
 
+                 _solver.SolveForPrime(workPackage);
+                Trace.TraceInformation("Created queue message for number {0}", primeToTest);
             }
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
