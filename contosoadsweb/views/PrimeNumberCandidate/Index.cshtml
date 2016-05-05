@@ -30,26 +30,7 @@ Last 100 primes will be displayed. Click the button to calculate more.
     </tr>*@
 
 <script type="text/javascript">
-    $(document).ready(function() {
-        $('#filterDisplay').click(function() {
-            $(".notPrime").toggle();
-            $(this).text(function(i, text) {
-                return text === "Show All" ? "Show only Primes" : "Show All";
-            });
-        });
-
-        @*@Html.ActionLink("Solve for more primes!", "CreateMany", null, new { @class = "btn btn-primary" })*@
-
-        $('#btnSolve').click(function() {
-            $.ajax({
-                url:  '@Url.Action("CreateMany", "PrimeNumberCandidate", null, Request.Url.Scheme)'
-                
-            });
-            //$('#filterDisplay').show();
-        });
-
-      
-    });
+   
 </script>
 
 <ul id="primeList">
@@ -64,22 +45,51 @@ Last 100 primes will be displayed. Click the button to calculate more.
 </ul>
 @section scripts{
     <script type="text/javascript">
-        //signalR stuff
-        var primeHub = $.connection.primeHub;
-
-        // Create a function that the hub can call back to display progress
-        primeHub.client.updateResult = function(number, isPrime) {
-            var isPrimeText = isPrime ? "isPrime " : "notPrime ";
-            $("#primeList").prepend("<li class='" + isPrimeText + "numberCell'>" + number + "</li>");
-        };
-        primeHub.client.updateProgress = function (percent) {
+        
+        function updateProgressBar(percent) {
             $('.progress-bar').css('width', percent + '%').attr('aria-valuenow', percent);
-        };
+            if (percent >= 100) {
+                $('.progress-bar').removeClass('active');
+            }
+        }
 
-        //$.connection.hub.logging = true;
-        //$.connection.hub.qs = "jobId=" + jobId;
-        $.connection.hub.start();
+        $(document).ready(function() {
+            $('#filterDisplay').click(function() {
+                $(".notPrime").toggle();
+                $(this).text(function(i, text) {
+                    return text === "Show All" ? "Show only Primes" : "Show All";
+                });
+            });
 
+           @*@Html.ActionLink("Solve for more primes!", "CreateMany", null, new { @class = "btn btn-primary" })*@
+
+           $('#btnSolve').click(function() {
+               $.ajax({
+                   url:  '@Url.Action("CreateMany", "PrimeNumberCandidate", null, Request.Url.Scheme)'
+               });
+               updateProgressBar(0);
+               toastr.info('Prime service initiated');
+               $('.progress-bar').addClass('active');
+               //$('#filterDisplay').show();
+           });
+
+            //signalR stuff
+            var primeHub = $.connection.primeHub;
+
+            // Create a function that the hub can call back to display progress
+            primeHub.client.updateResult = function (number, isPrime) {
+                var isPrimeText = isPrime ? "isPrime " : "notPrime ";
+                $("#primeList").prepend("<li class='" + isPrimeText + "numberCell'>" + number + "</li>");
+            };
+            primeHub.client.updateProgress = function (percent) {
+                updateProgressBar(percent);
+            };
+
+            //$.connection.hub.logging = true;
+            //$.connection.hub.qs = "jobId=" + jobId;
+            $.connection.hub.start();
+
+        });
     </script>
 }
 
