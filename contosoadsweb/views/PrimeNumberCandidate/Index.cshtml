@@ -50,6 +50,8 @@ Last 100 primes will be displayed. Click the button to calculate more.
             $('.progress-bar').css('width', percent + '%').attr('aria-valuenow', percent);
             if (percent >= 100) {
                 $('.progress-bar').removeClass('active');
+                toastr.success('All done!');
+                $('#btnSolve').removeAttr('disabled')
             }
         }
 
@@ -69,6 +71,7 @@ Last 100 primes will be displayed. Click the button to calculate more.
                });
                updateProgressBar(0);
                toastr.info('Prime service initiated');
+               $('#btnSolve').attr('disabled', 'disabled');
                $('.progress-bar').addClass('active');
                //$('#filterDisplay').show();
            });
@@ -80,6 +83,7 @@ Last 100 primes will be displayed. Click the button to calculate more.
             primeHub.client.updateResult = function (number, isPrime) {
                 var isPrimeText = isPrime ? "isPrime " : "notPrime ";
                 $("#primeList").prepend("<li class='" + isPrimeText + "numberCell'>" + number + "</li>");
+                $('#btnSolve').attr('disabled', 'disabled');
             };
             primeHub.client.updateProgress = function (percent) {
                 updateProgressBar(percent);

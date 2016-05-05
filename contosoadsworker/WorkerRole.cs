@@ -90,7 +90,7 @@ namespace PrimeSolverWorker
 
             _numProcessed++;
             CommunicateResult(primeNumberCandidate);
-            var percent = (int)Math.Round((double)(100 * _numProcessed) / (_numItems-1));
+            var percent = (int)Math.Round((double)(100 * _numProcessed) / _numItems);
             CommunicateProgress(percent);
             // Remove message from queue.
             this._primesQueue.DeleteMessage(msg);
