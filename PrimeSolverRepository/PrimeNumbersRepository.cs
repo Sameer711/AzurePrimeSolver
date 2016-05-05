@@ -20,9 +20,27 @@ namespace PrimeSolverRepository
             _db = connectionString == null ? new PrimeNumberCandidatesContext() : new PrimeNumberCandidatesContext(connectionString);
         }
 
-        public IEnumerable<PrimeNumberCandidate> Get()
+        public bool Any()
         {
-            return _db.PrimeNumberCandidates;
+            return _db.PrimeNumberCandidates.Any();
+        }
+
+        public PrimeNumberCandidate Find(int number)
+        {
+            return
+                _db.PrimeNumberCandidates.FirstOrDefault(p => p.Number == number);
+        }
+
+        public int GetMaxSolved()
+        {
+            return _db.PrimeNumberCandidates.Max(p => p.Number);
+        }
+
+        public IEnumerable<PrimeNumberCandidate> Get(int numResults, bool onlyPrime)
+        {
+            return
+                _db.PrimeNumberCandidates.Where(p => onlyPrime && p.IsPrime.HasValue && p.IsPrime.Value)
+                    .Take(numResults);
         }
 
         public async Task Add(PrimeNumberCandidate primeNumberCandidate)

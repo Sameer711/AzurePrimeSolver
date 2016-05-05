@@ -1,5 +1,7 @@
+﻿using System;
 using System.Diagnostics;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Azure;
 using Microsoft.WindowsAzure.ServiceRuntime;
@@ -16,6 +18,8 @@ namespace PrimeSolverWorker
         //private CloudBlobContainer primesBlobContainer;
         private PrimeNumbersRepository _repository;
         //private CloudTable _tableContainer;
+        public string BaseUrl { get; set; }
+        readonly HttpClient _httpClient = new HttpClient();
 
         public override void Run()
         {
@@ -71,9 +75,29 @@ namespace PrimeSolverWorker
             };
             await _repository.Add(primeNumberCandidate);
 
+            CommunicateProgress(primeNumberCandidate);
             // Remove message from queue.
             this._primesQueue.DeleteMessage(msg);
         }
+
+        /// <summary>
+        /// Send result to client endpoint
+        /// </summary>
+        /// <param name="primeCandidate"></param>
+        /// <remarks>Thanks to http://www.jerriepelser.com/blog/communicate-from-azure-webjob-with-signalr for the sample</remarks>
+        /// <returns></returns>
+        private async Task CommunicateProgress(PrimeNumberCandidate primeCandidate)
+        {
+            if (!primeCandidate.IsPrime.HasValue || !primeCandidate.IsPrime.Value)
+                return;
+
+            var queryString = $"?number={primeCandidate.Number}&isPrime={primeCandidate.IsPrime}";
+            //var request = CloudConfigurationManager.GetSetting("ProgressNotificationEndpoint");
+            var request = BaseUrl + "/PrimeNumberCandidate/ProgressNotification" + queryString;
+            await _httpClient.GetAsync(request);
+        }
+
+
 
         // A production app would also include an OnStop override to provide for
         // graceful shut-downs of worker-role VMs.  See
@@ -100,6 +124,9 @@ namespace PrimeSolverWorker
             //}
             var dbConnString = CloudConfigurationManager.GetSetting("PrimeSolverDbConnectionString");
             _repository = new PrimeNumbersRepository(dbConnString);
+            //var webRoleEndPoint = RoleEnvironment.Roles["PrimeWorkerWeb"].Instances[0].InstanceEndpoints["WebPortalEndPointHttps"].ToString();
+
+            BaseUrl = CloudConfigurationManager.GetSetting("ApplicationRoot");
 
             Trace.TraceInformation("Creating primes queue");
             CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();

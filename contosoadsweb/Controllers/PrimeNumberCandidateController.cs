@@ -19,17 +19,17 @@ namespace PrimeSolverWeb.Controllers
     {
 
         private readonly int NUMPRIMES = 100;
-        private IHubConnectionContext<dynamic> Clients
-        {
-            get;
-            set;
-        }
+        //private IHubConnectionContext<dynamic> Clients
+        //{
+        //    get;
+        //    set;
+        //}
 
         private readonly PrimeSolver _solver = PrimeSolver.GetPrimeSolver();
-        public PrimeNumberCandidateController()
-        {
-            Clients = GlobalHost.ConnectionManager.GetHubContext<PrimeHub>().Clients;
-        }
+        //public PrimeNumberCandidateController()
+        //{
+        //    Clients = GlobalHost.ConnectionManager.GetHubContext<PrimeHub>().Clients;
+        //}
         
         // GET: PrimeNumberCandidate
         public ActionResult Index()
@@ -38,7 +38,7 @@ namespace PrimeSolverWeb.Controllers
             // it could return too many rows for the web app to handle. For an example
             // of paging code, see:
             // http://www.asp.net/mvc/tutorials/getting-started-with-ef-using-mvc/sorting-filtering-and-paging-with-the-entity-framework-in-an-asp-net-mvc-application
-            var list = _solver.Get();
+            var list = _solver.Get(100, true);
             return View(list);
         }
 
@@ -61,6 +61,15 @@ namespace PrimeSolverWeb.Controllers
         public ActionResult Create()
         {
             return View();
+        }
+
+        public ActionResult ProgressNotification(int number, bool isPrime)
+        {
+            // Notify the client to refresh the list of connections
+            var hubContext = GlobalHost.ConnectionManager.GetHubContext<PrimeHub>();
+            hubContext.Clients.All.updateProgress(number, isPrime);
+
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
         //// POST: PrimeNumberCandidate/Create
@@ -100,7 +109,7 @@ namespace PrimeSolverWeb.Controllers
                 Trace.TraceInformation("Created queue message for number {0}", primeToTest);
 
             }
-            return RedirectToAction("Index");
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
     }
 }

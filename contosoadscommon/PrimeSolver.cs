@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Azure;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.Storage;
@@ -32,9 +30,9 @@ namespace PrimeSolverCommon
             return Instance ?? (Instance = new PrimeSolver());
         }
 
-        public IEnumerable<PrimeCandidateViewModel> Get()
+        public IEnumerable<PrimeCandidateViewModel> Get(int numResults, bool onlyPrime)
         {
-            var list = _repository.Get();
+            var list = _repository.Get(numResults, onlyPrime);
             return list.Select(PrimeCandidateViewModel.FromEntity);
         }
 
@@ -49,13 +47,13 @@ namespace PrimeSolverCommon
 
         public int GetMaxSolved()
         {
-            var max = _repository.Get().Any() ? _repository.Get().Max(p => p.Number) :1;
+            var max = _repository.Any() ? _repository.GetMaxSolved() :1;
             return max;
         }
 
         public PrimeCandidateViewModel Get(int number)
         {
-            var numberCandidate = _repository.Get().FirstOrDefault(p=>p.Number == number);
+            var numberCandidate = _repository.Find(number);
             return PrimeCandidateViewModel.FromEntity(numberCandidate);
         }
 

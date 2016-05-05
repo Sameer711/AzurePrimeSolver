@@ -21,6 +21,7 @@
   </WebRole>
   <WorkerRole name="PrimeSolverWorker" vmsize="Small">
     <ConfigurationSettings>
+      <Setting name="ApplicationRoot" />
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
       <Setting name="StorageConnectionString" />
       <Setting name="PrimeSolverDbConnectionString" />

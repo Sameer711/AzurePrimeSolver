@@ -22,10 +22,10 @@ namespace PrimeSolverWeb
             
         }
 
-        public IEnumerable<PrimeCandidateViewModel> GetAll()
-        {
-            return _solver.Get();
-        }
+        //public IEnumerable<PrimeCandidateViewModel> GetAll()
+        //{
+        //    return _solver.Get(100, false);
+        //}
 
 
         public void Send(int number, bool isPrime)

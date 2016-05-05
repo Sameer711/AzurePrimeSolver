@@ -4,11 +4,12 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
-
+<h2>Primes!</h2>
+Last 100 primes will be displayed.  Click the button to calculate more.
 <p>
-    @Html.ActionLink("Solve for more primes!", "CreateMany", null, new { @class = "btn btn-primary" })
-    <button type="button" class="btn btn-default" id="filterDisplay">Show Only Primes</button>
+    <button type="button" class="btn btn-primary" id="btnSolve">Solve for more primes!</button>
+
+    <button type="button" class="btn btn-default" id="filterDisplay" style="display: none;">Show Only Primes</button>
 </p>
     @*<tr>
         <th>
@@ -21,18 +22,6 @@
         <th></th>
     </tr>*@
 
-<ul>
-
-    @foreach (var item in Model.OrderByDescending(item => item.Number))
-    {
-        var @isPrimeClass = item.IsPrime.HasValue && item.IsPrime.Value ? "isPrime numberCell" : "notPrime numberCell";
-        <li class="@isPrimeClass">
-            @Html.DisplayFor(modelItem => item.Number)
-        </li>
-
-
-    }
-</ul>
 <script type="text/javascript">
     $(document).ready(function() {
         $('#filterDisplay').click(function() {
@@ -41,8 +30,49 @@
                 return text === "Show All" ? "Show only Primes" : "Show All";
             });
         });
+
+        @*@Html.ActionLink("Solve for more primes!", "CreateMany", null, new { @class = "btn btn-primary" })*@
+
+        $('#btnSolve').click(function() {
+            $.ajax({
+                url:  '@Url.Action("CreateMany", "PrimeNumberCandidate", null, Request.Url.Scheme)'
+                
+            });
+            //$('#filterDisplay').show();
+        });
+
+      
     });
 </script>
 
+<ul id="primeList">
+
+    @foreach (var item in Model.OrderByDescending(item => item.Number))
+    {
+        var @isPrimeClass = item.IsPrime.HasValue && item.IsPrime.Value ? "isPrime numberCell" : "notPrime numberCell";
+        <li class="@isPrimeClass">@Html.DisplayFor(modelItem => item.Number)</li>
+
+
+    }
+</ul>
+@section scripts{
+    <script type="text/javascript">
+        //signalR stuff
+        var primeHub = $.connection.primeHub;
+
+        // Create a function that the hub can call back to display progress
+        primeHub.client.updateProgress = function(number, isPrime) {
+            //$("#progress-span").text(progress);
+            var isPrimeText = isPrime ? "isPrime " : "notPrime ";
+            $("#primeList").prepend("<li class='" + isPrimeText + "numberCell'>" + number + "</li>");
+            console.log("Appending <li class='" + isPrimeText + "numberCell'>" + number + "</li>");
+        };
+
+        //$.connection.hub.logging = true;
+        //$.connection.hub.qs = "jobId=" + jobId;
+        $.connection.hub.start();
+
+    </script>
+}
 
 
