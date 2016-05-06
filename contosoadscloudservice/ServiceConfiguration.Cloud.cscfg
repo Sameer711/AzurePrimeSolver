@@ -3,16 +3,20 @@
   <Role name="PrimeSolverWeb">
     <Instances count="1" />
     <ConfigurationSettings>
-      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
-      <Setting name="StorageConnectionString" value="UseDevelopmentStorage=true" />
+
     </ConfigurationSettings>
+    <Certificates>
+      <Certificate name="Microsoft.WindowsAzure.Plugins.RemoteAccess.PasswordEncryption" thumbprint="CC5F1EF1872C46D97AB9CA34F9B82FB4237B080F" thumbprintAlgorithm="sha1" />
+    </Certificates>
   </Role>
   <Role name="PrimeSolverWorker">
     <Instances count="1" />
     <ConfigurationSettings>
-      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
-      <Setting name="StorageConnectionString" value="UseDevelopmentStorage=true" />
-      <Setting name="ContosoAdsDbConnectionString" value="Data Source=(localdb)\MSSQLLocalDB; Initial Catalog=ContosoAds; Integrated Security=True; MultipleActiveResultSets=True;" />
+      <Setting name="ApplicationRoot" value="http://primesolver.cloudapp.net/" />
+
     </ConfigurationSettings>
+    <Certificates>
+
+    </Certificates>
   </Role>
 </ServiceConfiguration>
