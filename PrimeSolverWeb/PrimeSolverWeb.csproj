@@ -264,7 +264,7 @@
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ContosoAdsCommon\PrimeSolverCommon.csproj">
+    <ProjectReference Include="..\PrimeSolverCommon\PrimeSolverCommon.csproj">
       <Project>{4362fc53-98e5-4e46-98a1-1f99ad74c13b}</Project>
       <Name>PrimeSolverCommon</Name>
     </ProjectReference>

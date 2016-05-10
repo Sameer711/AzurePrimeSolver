@@ -282,5 +282,8 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
-contosoadscloudservice/ServiceConfiguration.Cloud.cscfg
-contosoadsweb/Web.Release.config
+
+ServiceConfiguration.Cloud.cscfg
+Web.Release.config
+obj/*
+debug/*

@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "PrimeSolverCloudService", "ContosoAdsCloudService\PrimeSolverCloudService.ccproj", "{0F8966AF-0D48-4840-90EF-0C8CD052FC02}"
+Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "PrimeSolverCloudService", "PrimeSolverCloudService\PrimeSolverCloudService.ccproj", "{0F8966AF-0D48-4840-90EF-0C8CD052FC02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimeSolverWeb", "ContosoAdsWeb\PrimeSolverWeb.csproj", "{92A8015A-1CCC-4527-B890-F604A2E764ED}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimeSolverWeb", "PrimeSolverWeb\PrimeSolverWeb.csproj", "{92A8015A-1CCC-4527-B890-F604A2E764ED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimeSolverWorker", "ContosoAdsWorker\PrimeSolverWorker.csproj", "{9C837457-68C0-4B86-8CAC-69F9B560D0D8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimeSolverWorker", "PrimeSolverWorker\PrimeSolverWorker.csproj", "{9C837457-68C0-4B86-8CAC-69F9B560D0D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimeSolverCommon", "ContosoAdsCommon\PrimeSolverCommon.csproj", "{4362FC53-98E5-4E46-98A1-1F99AD74C13B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimeSolverCommon", "PrimeSolverCommon\PrimeSolverCommon.csproj", "{4362FC53-98E5-4E46-98A1-1F99AD74C13B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{DA3C4489-D72B-41BE-9140-2225E1AAC20A}"
 EndProject
