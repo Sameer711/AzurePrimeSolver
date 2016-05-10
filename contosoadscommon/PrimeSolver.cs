@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Azure;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.Storage;
@@ -52,11 +53,16 @@ namespace PrimeSolverCommon
             return max;
         }
 
-        public PrimeCandidateViewModel Get(int number)
-        {
-            var numberCandidate = _repository.Find(number);
-            return PrimeCandidateViewModel.FromEntity(numberCandidate);
-        }
+        ///// <summary>
+        ///// Get a specific one
+        ///// </summary>
+        ///// <param name="number"></param>
+        ///// <returns></returns>
+        //public PrimeCandidateViewModel Get(int number)
+        //{
+        //    var numberCandidate = _repository.Find(number);
+        //    return PrimeCandidateViewModel.FromEntity(numberCandidate);
+        //}
 
         public void SolveForPrime(PrimeNumberWorkPackage workPackage)
         {
@@ -85,6 +91,12 @@ namespace PrimeSolverCommon
             _repository = new PrimeNumbersRepository(dbConnString);
             // Get a reference to the queue.
             _primesQueue = queueClient.GetQueueReference("primes");
+        }
+
+        public bool IsReadyForWork()
+        {
+            _primesQueue.FetchAttributes();
+            return _primesQueue.ApproximateMessageCount == 0;
         }
 
         public static bool IsPrime(int candidate)

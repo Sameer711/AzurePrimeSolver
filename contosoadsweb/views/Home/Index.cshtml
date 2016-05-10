@@ -10,13 +10,14 @@
 <div class="row">
     <div class="col-md-12">
         <p>
-            Prime Solver solves primes using Azure.
+            Prime Solver solves primes using Azure. On the next page you can click a button to make an async call to test the next 100 numbers for unsolved primes.
+            This will create a work package and send it to the Azure Cloud service to calculate the work. As results are completed, the worker makes an HTTP request
+            to the api endpoint to let the client know that results have been completed, and an update is broadcasted via signalR to notify
+            the client(s) to update the progress bar.
         </p>
         <p>The application uses ASP.NET MVC, SQL Database, Azure storage queues, Entity Framework, jQuery, signalR, Bootstrap</p>
         <ul>
-            <li>@Html.ActionLink("All", "Index", "PrimeNumberCandidate", null, null)</li>
+            <li>@Html.ActionLink("See Top Primes Solved", "Index", "PrimeNumberCandidate", null, null)</li>
         </ul>
-        <h2>Or test a new prime number</h2>
-        <p><a class="btn btn-default" href="@Url.Action("CreateMany","PrimeNumberCandidate")">Solve many primes</a></p>
     </div>
 </div>

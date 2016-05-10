@@ -19,19 +19,24 @@ namespace PrimeSolverWeb
 
         public PrimeHub() : this(PrimeSolver.GetPrimeSolver())
         {
-            
+
         }
 
-        //public IEnumerable<PrimeCandidateViewModel> GetAll()
+        //public void BroadcastResult(int number, bool isPrime)
         //{
-        //    return _solver.Get(100, false);
+        //    Clients.All.updateResult(number, isPrime);
+
+        //}
+        public bool IsReadyForWork()
+        {
+            return _solver.IsReadyForWork();
+        }
+
+        //public void BroadcastProgress(int percent)
+        //{
+        //    Clients.All.updateProgress(percent);
+
         //}
 
-
-        public void Send(int number, bool isPrime)
-        {
-            // Call the broadcastMessage method to update clients.
-            Clients.All.broadcastMessage(number, isPrime);
-        }
     }
 }

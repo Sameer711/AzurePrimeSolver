@@ -18,6 +18,7 @@ namespace PrimeSolverWeb.Controllers
     public class PrimeNumberCandidateController : Controller
     {
 
+        private IHubContext _hub = GlobalHost.ConnectionManager.GetHubContext<PrimeHub>();
         private readonly int NUMPRIMES = 100;
         //private IHubConnectionContext<dynamic> Clients
         //{
@@ -42,20 +43,20 @@ namespace PrimeSolverWeb.Controllers
             return View(list);
         }
 
-        // GET: PrimeNumberCandidate/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var numberCandidate = _solver.Get(id.Value);
-            if (numberCandidate == null)
-            {
-                return HttpNotFound();
-            }
-            return View(numberCandidate);
-        }
+        //// GET: PrimeNumberCandidate/Details/5
+        //public ActionResult Details(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //    var numberCandidate = _solver.Get(id.Value);
+        //    if (numberCandidate == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    return View(numberCandidate);
+        //}
 
         // GET: PrimeNumberCandidate/Create
         public ActionResult Create()
@@ -65,20 +66,14 @@ namespace PrimeSolverWeb.Controllers
 
         public ActionResult ResultNotification(int number, bool isPrime)
         {
-            // Notify the client to refresh the list of connections
-            var hubContext = GlobalHost.ConnectionManager.GetHubContext<PrimeHub>();
-            hubContext.Clients.All.updateResult(number, isPrime);
-
+            _hub.Clients.All.updateResult(number, isPrime);
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
 
         public ActionResult ProgressNotification(int percent)
         {
-            // Notify the client to refresh the list of connections
-            var hubContext = GlobalHost.ConnectionManager.GetHubContext<PrimeHub>();
-            hubContext.Clients.All.updateProgress(percent);
-
+            _hub.Clients.All.updateProgress(percent);
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
         //// POST: PrimeNumberCandidate/Create

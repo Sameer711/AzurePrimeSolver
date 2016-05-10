@@ -82,16 +82,17 @@ namespace PrimeSolverWorker
             }
 
             var numberToTest = workPackage.Number;
+            var isPrime = await Task.Run(() => PrimeSolver.IsPrime(numberToTest));
             var primeNumberCandidate = new PrimeNumberCandidate(numberToTest)
             {
-                IsPrime = PrimeSolver.IsPrime(numberToTest)
+                IsPrime = isPrime
             };
             await _repository.Add(primeNumberCandidate);
 
             _numProcessed++;
-            CommunicateResult(primeNumberCandidate);
-            var percent = (int)Math.Round((double)(100 * _numProcessed) / _numItems);
-            CommunicateProgress(percent);
+            await CommunicateResult(primeNumberCandidate);
+            //var percent = (int)Math.Round((double)(100 * _numProcessed) / _numItems);
+            await CommunicateProgress();
             // Remove message from queue.
             this._primesQueue.DeleteMessage(msg);
         }
@@ -117,8 +118,10 @@ namespace PrimeSolverWorker
         /// Send update to client endpoint
         /// </summary>
         /// <returns></returns>
-        private async Task CommunicateProgress(int percent)
+        private async Task CommunicateProgress()
         {
+            var percent = (int)Math.Round((double)(100 * _numProcessed) / _numItems);
+            //var percent = _primesQueue.ApproximateMessageCount;
             var queryString = $"?percent={percent}";
             //var request = CloudConfigurationManager.GetSetting("ProgressNotificationEndpoint");
             var request = BaseUrl + "/PrimeNumberCandidate/ProgressNotification" + queryString;
