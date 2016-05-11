@@ -287,3 +287,4 @@ ServiceConfiguration.Cloud.cscfg
 Web.Release.config
 obj/*
 debug/*
+ServiceConfiguration.Local.cscfg
